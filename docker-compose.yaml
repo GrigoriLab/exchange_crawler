@@ -1,0 +1,50 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
+    ports:
+      - 5672:5672
+      - 15672:15672
+    expose:
+      - "5672"
+      - "15672"
+    restart: always
+  postgres:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASS}
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+  runserver:
+    container_name: celery_server
+    hostname: celeryserver
+    depends_on:
+      - rabbitmq
+      - postgres
+    build:
+      context: ./
+    privileged: true
+    volumes:
+      - ./:/app
+    ports:
+      - 8000:8000
+    expose:
+      - "8000"
+    environment:
+      - RABBITMQ_USER=${RABBITMQ_USER}
+      - RABBITMQ_PASS=${RABBITMQ_PASS}
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - DATABASE_URL=${DATABASE_URL}
+      - ALPHAVANTAGE_API_KEY=${ALPHAVANTAGE_API_KEY}
+    restart: always
+
+volumes:
+  db:
+    driver: local
