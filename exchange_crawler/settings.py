@@ -155,3 +155,5 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
 }
+
+FIXTURE_DIRS = (os.path.join(BASE_DIR, "fixtures"),)

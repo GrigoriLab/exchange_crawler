@@ -1,0 +1,17 @@
+[
+  {
+    "model": "quote.quote",
+    "pk": 1,
+    "fields": {
+      "from_currency_code": "BTC",
+      "from_currency_name": "Bitcoin",
+      "to_currency_code": "USD",
+      "to_currency_name": "United States Dollar",
+      "exchange_rate": "37931.35000000",
+      "last_refreshed": "2022-02-04T11:45:01Z",
+      "time_zone": "UTC",
+      "bid_price": "37931.35000000",
+      "ask_price": "37931.36000000"
+    }
+  }
+]
