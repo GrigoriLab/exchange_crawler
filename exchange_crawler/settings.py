@@ -9,10 +9,12 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from celery.schedules import crontab
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -37,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_celery_beat',
     'apps.quote',
     'apps.api',
 ]
@@ -125,3 +128,22 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# CELERY STUFF
+RABBITMQ_USER = os.environ.get("RABBITMQ_USER", "guest")
+RABBITMQ_PASS = os.environ.get("RABBITMQ_PASS", "guest")
+RABBITMQ_HOST = os.environ.get("RABBITMQ_HOST", "localhost")
+CELERY_BROKER_URL = f'amqp://{RABBITMQ_USER}:{RABBITMQ_PASS}@{RABBITMQ_HOST}:5672//'
+CELERY_RESULT_BACKEND = f'amqp://{RABBITMQ_USER}:{RABBITMQ_PASS}@{RABBITMQ_HOST}:5672//'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Yerevan'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+CELERY_BEAT_SCHEDULE = {
+    "Schedule tasks": {
+        "task": "apps.quote.tasks.debug_task",
+        "schedule": crontab(minute="*"),
+    },
+}
