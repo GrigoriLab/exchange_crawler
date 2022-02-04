@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_celery_beat',
     'apps.quote',
     'apps.api',
@@ -147,4 +148,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "apps.quote.tasks.debug_task",
         "schedule": crontab(minute="*"),
     },
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
 }
