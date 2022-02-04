@@ -10,10 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
+from datetime import timedelta
 from pathlib import Path
 
 import dj_database_url
-from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
@@ -144,7 +144,7 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 CELERY_BEAT_SCHEDULE = {
     "Schedule tasks": {
         "task": "apps.quote.tasks.crawler",
-        "schedule": crontab(minute=6, hour="*/1"),
+        "schedule": timedelta(hours=1),
     },
 }
 
