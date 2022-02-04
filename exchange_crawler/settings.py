@@ -145,7 +145,7 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 CELERY_BEAT_SCHEDULE = {
     "Schedule tasks": {
-        "task": "apps.quote.tasks.debug_task",
+        "task": "apps.quote.tasks.crawler",
         "schedule": crontab(minute="*"),
     },
 }
