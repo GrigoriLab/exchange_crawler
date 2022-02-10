@@ -6,35 +6,45 @@ services:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
     ports:
-      - 5672:5672
-      - 15672:15672
+      - "15672:15672"
     expose:
       - "5672"
-      - "15672"
     restart: always
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
   postgres:
     image: postgres:14.1-alpine
     restart: always
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASS}
-    ports:
-      - '5432:5432'
+    expose:
+      - "5432"
     volumes:
       - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   runserver:
     container_name: celery_server
     hostname: celeryserver
     depends_on:
-      - rabbitmq
-      - postgres
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     build:
       context: ./
     privileged: true
     volumes:
       - ./:/app
     ports:
-      - 8000:8000
+      - "8000:8000"
     expose:
       - "8000"
     environment:
