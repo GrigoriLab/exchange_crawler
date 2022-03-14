@@ -16,6 +16,7 @@ from pathlib import Path
 import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from celery.schedules import crontab
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -130,6 +131,9 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CELERY STUFF
+# Feb 29 of every year.
+NEVER = crontab(0, 2, day_of_month="29", month_of_year="2")
+
 RABBITMQ_USER = os.environ.get("RABBITMQ_USER", "guest")
 RABBITMQ_PASS = os.environ.get("RABBITMQ_PASS", "guest")
 RABBITMQ_HOST = os.environ.get("RABBITMQ_HOST", "localhost")
@@ -144,7 +148,7 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 CELERY_BEAT_SCHEDULE = {
     "Schedule tasks": {
         "task": "apps.quote.tasks.crawler",
-        "schedule": timedelta(hours=1),
+        "schedule": timedelta(hours=1) if not DEBUG else NEVER,
     },
 }
 
